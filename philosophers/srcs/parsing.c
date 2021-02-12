@@ -1,6 +1,6 @@
 #include "../includes/philosophers.h"
 
-int		ft_all_numbers(char **av)
+int			ft_all_numbers(char **av)
 {
 	int i;
 	int j;
@@ -21,18 +21,19 @@ int		ft_all_numbers(char **av)
 	return (0);
 }
 
-int    ft_parsing(int ac, char **av, t_init *args)
+int			ft_parsing(int ac, char **av, t_init *args)
 {
 	args->number_of_philosopher = ft_atoi(av[1]);
 	args->time_to_die = ft_atoi(av[2]);
 	args->time_to_eat = ft_atoi(av[3]);
 	args->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
-		args->number_of_time_each_philosophers_must_eat = ft_atoi(av[5]);
+		args->n_must_eat = ft_atoi(av[5]);
 	if (args->number_of_philosopher < 0
-		|| args->time_to_die < 0 || args->time_to_eat < 0 || args->time_to_sleep < 0)
+		|| args->time_to_die < 0 || args->time_to_eat < 0
+		|| args->time_to_sleep < 0)
 		return (1);
-	if (ac == 6 && args->number_of_time_each_philosophers_must_eat < 0)
-		return (1);	
+	if (ac == 6 && args->n_must_eat < 0)
+		return (1);
 	return (0);
 }

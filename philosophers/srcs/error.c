@@ -18,15 +18,16 @@ void	ft_free(int number_of_philo, t_philosopher *philos)
 	free(philos);
 }
 
-int     ft_error(int error_code, t_philosopher *philos, int number_of_philo)
+int		ft_error(int error_code, t_philosopher *philos, int number_of_philo)
 {
-    if (error_code == 1)
-        printf("Incorrect number of argument or alphabetic argument\nError Code %d\n", error_code);
-    else if (error_code == 2)
+	if (error_code == 1)
+		printf("Incorrect number of arguments "
+		"or alphabetic argument\nError Code %d\n", error_code);
+	else if (error_code == 2)
 		printf("Error Parsing\nError Code %d\n", error_code);
 	else if (error_code == 3)
 		printf("Thread error\nError Code %d\n", error_code);
 	if (philos != NULL)
 		ft_free(number_of_philo, philos);
-    return (-1);
+	return (-1);
 }
