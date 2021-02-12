@@ -32,13 +32,13 @@ static inline void			fixed_usleep(unsigned int u_sec)
 
 static inline int			check_if_dead(t_philosopher *philo)
 {
-	pthread_mutex_lock(&philo->arguments->dead);
+	sem_wait(philo->arguments->dead);
 	if (g_philo_dead == 1)
 	{
-		pthread_mutex_unlock(&philo->arguments->dead);
+		sem_post(philo->arguments->dead);
 		return (1);
 	}
-	pthread_mutex_unlock(&philo->arguments->dead);
+	sem_post(philo->arguments->dead);
 	return (0);
 }
 
@@ -50,7 +50,7 @@ static inline void			status_philo(t_philosopher *philos, char *msg)
 	char			str[64];
 	long long		number;
 
-	pthread_mutex_lock(&philos->arguments->lock_status);
+	sem_wait(philos->arguments->lock_status);
 	gettimeofday(&now, NULL);
 	number = ((now.tv_sec - philos->arguments->start_philo.tv_sec) * 1000
 		+ (now.tv_usec - philos->arguments->start_philo.tv_usec) * 0.001);
@@ -64,39 +64,39 @@ static inline void			status_philo(t_philosopher *philos, char *msg)
 		str[i++] = *(msg++);
 	if (check_if_dead(philos) == 0)
 		write(1, str, i);
-	pthread_mutex_unlock(&philos->arguments->lock_status);
+	sem_post(philos->arguments->lock_status);
 }
 
 static inline int			ft_eating_philo(t_philosopher *philos)
 {
-	if ((philos->num_philo % 2) == 1)
-		pthread_mutex_lock(philos->fork_right);
-	else
-		pthread_mutex_lock(philos->fork_left);
+	sem_wait(philos->arguments->perm_fork);
+	sem_wait(philos->fork);
 	if (check_if_dead(philos) == 1)
 	{
-		if ((philos->num_philo % 2) == 1)
-			pthread_mutex_unlock(philos->fork_right);
-		else
-			pthread_mutex_unlock(philos->fork_left);
+		sem_post(philos->arguments->perm_fork);
+		sem_post(philos->fork);
 		return (1);
 	}
 	status_philo(philos, "has taken a fork\n");
-	if ((philos->num_philo % 2) == 0)
-		pthread_mutex_lock(philos->fork_right);
-	else
-		pthread_mutex_lock(philos->fork_left);
+	sem_wait(philos->fork);
 	if (check_if_dead(philos) == 1)
+	{
+		sem_post(philos->arguments->perm_fork);
+		sem_post(philos->fork);
+		sem_post(philos->fork);
 		return (1);
+	}
 	status_philo(philos, "has taken a fork\n");
-	if (check_if_dead(philos) == 1)
-		return (1);
+	// if (check_if_dead(philos) == 1)
+	// 	return (1);
 	status_philo(philos, "is eating\n");
 	gettimeofday(philos->last_meal, NULL);
 	philos->arguments->nb_has_eaten++;
 	fixed_usleep(philos->arguments->time_to_eat * 1000);
-	pthread_mutex_unlock(philos->fork_right);
-	pthread_mutex_unlock(philos->fork_left);
+	sem_post(philos->fork);
+	sem_post(philos->fork);
+	sem_post(philos->arguments->perm_fork);
+
 	return (0);
 }
 
