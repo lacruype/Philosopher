@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   life.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lacruype <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/12 13:22:36 by lacruype          #+#    #+#             */
+/*   Updated: 2021/02/12 15:34:52 by lacruype         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philosophers.h"
 
 int g_philo_dead = 0;
@@ -16,6 +28,18 @@ static inline void			fixed_usleep(unsigned int u_sec)
 			+ (step.tv_usec - now.tv_usec) >= u_sec)
 			return ;
 	}
+}
+
+static inline int			check_if_dead(t_philosopher *philo)
+{
+	pthread_mutex_lock(&philo->arguments->dead);
+	if (g_philo_dead == 1)
+	{
+		pthread_mutex_unlock(&philo->arguments->dead);
+		return (1);
+	}
+	pthread_mutex_unlock(&philo->arguments->dead);
+	return (0);
 }
 
 static inline void			status_philo(t_philosopher *philos, char *msg)
@@ -38,21 +62,9 @@ static inline void			status_philo(t_philosopher *philos, char *msg)
 	str[i++] = '\t';
 	while (*msg)
 		str[i++] = *(msg++);
-	write(1, str, i);
+	if (check_if_dead(philos) == 0)
+		write(1, str, i);
 	pthread_mutex_unlock(&philos->arguments->lock_status);
-}
-
-static inline int			check_if_dead(t_philosopher *philo)
-{
-	(void)philo;
-	pthread_mutex_lock(&philo->arguments->dead);
-	if (g_philo_dead == 1)
-	{
-		pthread_mutex_unlock(&philo->arguments->dead);
-		return (1);
-	}
-	pthread_mutex_unlock(&philo->arguments->dead);
-	return (0);
 }
 
 static inline int			ft_eating_philo(t_philosopher *philos)
@@ -61,6 +73,14 @@ static inline int			ft_eating_philo(t_philosopher *philos)
 		pthread_mutex_lock(philos->fork_right);
 	else
 		pthread_mutex_lock(philos->fork_left);
+	if (check_if_dead(philos) == 1)
+	{
+		if ((philos->num_philo % 2) == 1)
+			pthread_mutex_unlock(philos->fork_right);
+		else
+			pthread_mutex_unlock(philos->fork_left);
+		return (1);
+	}
 	status_philo(philos, "has taken a fork\n");
 	if ((philos->num_philo % 2) == 0)
 		pthread_mutex_lock(philos->fork_right);

@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitoring.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lacruype <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/02/12 13:22:36 by lacruype          #+#    #+#             */
+/*   Updated: 2021/02/12 15:34:52 by lacruype         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philosophers.h"
 
-static inline void	fixed_usleep(unsigned int u_sec)
+static inline void		fixed_usleep(unsigned int u_sec)
 {
 	struct timeval now;
 	struct timeval step;
@@ -63,11 +75,10 @@ static inline void		monitoring2(t_philosopher *philos)
 	int j;
 
 	j = 0;
-	ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
 	pthread_mutex_lock(&philos->arguments->dead);
 	g_philo_dead = 1;
 	pthread_mutex_unlock(&philos->arguments->dead);
-	j = 0;
+	ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
 	while (j < philos->arguments->number_of_philosopher)
 	{
 		pthread_join(*philos[j].philo, NULL);
@@ -91,10 +102,7 @@ void					monitoring(t_philosopher *philos)
 		time_since_last_eat = (now.tv_sec - philos[i].last_meal->tv_sec)
 		* 1000 + (now.tv_usec - philos[i].last_meal->tv_usec) * 0.001;
 		if (time_since_last_eat > philos->arguments->time_to_die)
-		{
-			monitoring3(philos);
-			return ;
-		}
+			return (monitoring3(philos));
 		else if (philos->arguments->n_must_eat != -1
 		&& philos->arguments->nb_has_eaten >=
 		(philos->arguments->number_of_philosopher
