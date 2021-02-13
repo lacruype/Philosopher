@@ -12,6 +12,8 @@
 
 #include "../includes/philosophers.h"
 
+int g_philo_eaten = 0;
+
 static inline void		fixed_usleep(unsigned int u_sec)
 {
 	struct timeval now;
@@ -52,55 +54,38 @@ static inline void		status_philo(t_philosopher *philos, char *msg)
 	sem_post(philos->arguments->lock_status);
 }
 
-static inline void		monitoring3(t_philosopher *philos)
+static inline void		*monitoring3(t_philosopher *philos)
 {
-	int j;
-
-	j = 0;
-	status_philo(philos, "died\n");
+	// sem_wait(philos->arguments->dead);
+	// status_philo(philos, "died\n");
+	// sem_post(philos->arguments->dead);
 	sem_wait(philos->arguments->dead);
 	g_philo_dead = 1;
 	sem_post(philos->arguments->dead);
-	j = 0;
-	while (j < philos->arguments->number_of_philosopher)
-	{
-		pthread_join(*philos[j].philo, NULL);
-		j++;
-	}
-	return ;
+	return (NULL);
 }
 
-static inline void		monitoring2(t_philosopher *philos)
+static inline void		*monitoring2(t_philosopher *philos)
 {
-	int j;
-
-	j = 0;
-	sem_wait(philos->arguments->dead);
-	g_philo_dead = 1;
-	sem_post(philos->arguments->dead);
-	ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
-	while (j < philos->arguments->number_of_philosopher)
-	{
-		pthread_join(*philos[j].philo, NULL);
-		j++;
-	}
-	return ;
+	sem_wait(philos->arguments->lock_status);
+	g_philo_eaten = 1;
+	sem_post(philos->arguments->lock_status);
+	// ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
+	return (NULL);
 }
 
-void					monitoring(t_philosopher *philos)
+void					*monitoring(void *arg)
 {
-	int				i;
 	long long		time_since_last_eat;
 	struct timeval	now;
+	t_philosopher *philos;
 
-	i = 0;
+	philos = arg;
 	while (1)
 	{
-		if (i == philos->arguments->number_of_philosopher)
-			i = 0;
 		gettimeofday(&now, NULL);
-		time_since_last_eat = (now.tv_sec - philos[i].last_meal->tv_sec)
-		* 1000 + (now.tv_usec - philos[i].last_meal->tv_usec) * 0.001;
+		time_since_last_eat = (now.tv_sec - philos->last_meal->tv_sec)
+		* 1000 + (now.tv_usec - philos->last_meal->tv_usec) * 0.001;
 		if (time_since_last_eat > philos->arguments->time_to_die)
 			return (monitoring3(philos));
 		else if (sem_wait(philos->arguments->lock_status) == 0
@@ -111,7 +96,7 @@ void					monitoring(t_philosopher *philos)
 			&& sem_post(philos->arguments->lock_status) == 0)
 			return (monitoring2(philos));
 		sem_post(philos->arguments->lock_status);
-		i++;
 		fixed_usleep(1000);
 	}
+	return (NULL);
 }

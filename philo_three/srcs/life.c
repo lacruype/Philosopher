@@ -100,7 +100,7 @@ static inline int			ft_eating_philo(t_philosopher *philos)
 **	X1000 because Miliseconds -> Microseconds
 */
 
-void						*living(void *arg)
+int						living(void *arg)
 {
 	t_philosopher *philo;
 
@@ -108,18 +108,22 @@ void						*living(void *arg)
 	while (1)
 	{
 		if (check_if_dead(philo) == 1)
-			return (NULL);
+			return (1);
 		if (ft_eating_philo(arg) == 1)
-			return (NULL);
+			return (1);
+		sem_wait(philo->arguments->lock_status);
+		if (g_philo_eaten == 1)
+			return (sem_post(philo->arguments->lock_status) + 2);
+		sem_post(philo->arguments->lock_status);
 		if (check_if_dead(philo) == 1)
-			return (NULL);
+			return (1);
 		status_philo(arg, "is sleeping\n");
 		if (check_if_dead(philo) == 1)
-			return (NULL);
+			return (1);
 		fixed_usleep(philo->arguments->time_to_sleep * 1000);
 		if (check_if_dead(philo) == 1)
-			return (NULL);
+			return (1);
 		status_philo(arg, "is thinking\n");
 	}
-	return (NULL);
+	return (0);
 }

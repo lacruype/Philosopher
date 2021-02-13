@@ -1,4 +1,4 @@
-NAME = philo_two
+NAME = philo_three
 SRCS = srcs/error.c srcs/ft_utils.c srcs/ft_utils2.c srcs/init_variables.c srcs/life.c srcs/main.c srcs/monitoring.c srcs/parsing.c
 OBJS = $(SRCS:.c=.o)
 CC = gcc
