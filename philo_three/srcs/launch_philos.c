@@ -62,19 +62,19 @@ static inline void			status_philo(t_philosopher *philos, char *msg)
 	sem_post(philos->arguments->lock_status);
 }
 
-void						launch_philos2(t_philosopher *philos,
+static inline void			launch_philos2(t_philosopher *philos,
 	int i, int j, int status)
 {
 	while (1)
 	{
-		waitpid(*philos[++i].philo, &status, WNOHANG | WUNTRACED);
+		waitpid(*philos[i].philo, &status, WNOHANG | WUNTRACED);
 		if (WIFEXITED(status))
 			if ((philos[i].has_finish_eaten = WEXITSTATUS(status)))
 			{
 				if (check_if_everyone_eat(philos) == 1)
 				{
 					sem_wait(philos->arguments->lock_status);
-					ft_putstr_fd("Everyone has eaten the enough\n", 1);
+					ft_putstr_fd("Everyone has eaten enough\n", 1);
 					sem_post(philos->arguments->lock_status);
 				}
 				else if (philos[i].has_finish_eaten == 1)
@@ -85,10 +85,10 @@ void						launch_philos2(t_philosopher *philos,
 				}
 				if (philos[i].has_finish_eaten == 1
 					|| check_if_everyone_eat(philos) == 1)
-					return (0);
+					return ;
 			}
-		if (i >= philos->arguments->number_of_philosopher)
-			i = -1;
+		if (++i >= philos->arguments->number_of_philosopher)
+			i = 0;
 	}
 }
 
@@ -114,7 +114,7 @@ int							launch_philos(t_philosopher *philos)
 		}
 		i++;
 	}
-	i = -1;
+	i = 0;
 	launch_philos2(philos, i, j, status);
 	return (0);
 }
