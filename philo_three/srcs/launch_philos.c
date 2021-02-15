@@ -71,13 +71,7 @@ static inline void			launch_philos2(t_philosopher *philos,
 		if (WIFEXITED(status))
 			if ((philos[i].has_finish_eaten = WEXITSTATUS(status)))
 			{
-				if (check_if_everyone_eat(philos) == 1)
-				{
-					sem_wait(philos->arguments->lock_status);
-					ft_putstr_fd("Everyone has eaten enough\n", 1);
-					sem_post(philos->arguments->lock_status);
-				}
-				else if (philos[i].has_finish_eaten == 1)
+				if (philos[i].has_finish_eaten == 1)
 				{
 					status_philo(&philos[i], "died\n");
 					while (++j < philos->arguments->number_of_philosopher)
