@@ -41,7 +41,6 @@ static inline void		*monitoring2(t_philosopher *philos)
 	sem_wait(philos->arguments->lock_status);
 	g_philo_eaten = 1;
 	sem_post(philos->arguments->lock_status);
-	// ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
 	return (NULL);
 }
 

@@ -71,16 +71,16 @@ static inline int			ft_eating_philo(t_philosopher *philos)
 	sem_wait(philos->fork);
 	if (check_if_dead(philos) == 1)
 	{
-		sem_post(philos->arguments->perm_fork);
-		return (sem_post(philos->fork) + 1);
+		sem_post(philos->fork);
+		return (sem_post(philos->arguments->perm_fork) + 1);
 	}
 	status_philo(philos, "has taken a fork\n");
 	sem_wait(philos->fork);
 	if (check_if_dead(philos) == 1)
 	{
-		sem_post(philos->arguments->perm_fork);
 		sem_post(philos->fork);
-		return (sem_post(philos->fork) + 1);
+		sem_post(philos->fork);
+		return (sem_post(philos->arguments->perm_fork) + 1);
 	}
 	status_philo(philos, "has taken a fork\n");
 	status_philo(philos, "is eating\n");
