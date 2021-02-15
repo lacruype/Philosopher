@@ -12,8 +12,6 @@
 
 #include "../includes/philosophers.h"
 
-int g_philo_dead = 0;
-
 static inline void			fixed_usleep(unsigned int u_sec)
 {
 	struct timeval now;

@@ -31,8 +31,8 @@
 # include <limits.h>
 # include <dirent.h>
 
-extern	int			g_philo_dead;
-extern	int			g_philo_eaten;
+int			g_philo_dead;
+int			g_philo_eaten;
 
 typedef	struct		s_init
 {

@@ -61,6 +61,8 @@ int		init_philos(t_philosopher **phil, t_init *a)
 
 void	init_args(t_init *args)
 {
+	g_philo_eaten = 0;
+	g_philo_dead = 0;
 	args->number_of_philosopher = 0;
 	args->time_to_die = 0;
 	args->time_to_eat = 0;
