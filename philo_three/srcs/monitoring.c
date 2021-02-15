@@ -12,6 +12,43 @@
 
 #include "../includes/philosophers.h"
 
+static inline int			check_if_dead(t_philosopher *philo)
+{
+	sem_wait(philo->arguments->dead);
+	if (g_philo_dead == 1)
+	{
+		sem_post(philo->arguments->dead);
+		return (1);
+	}
+	sem_post(philo->arguments->dead);
+	return (0);
+}
+
+static inline void			status_philo(t_philosopher *philos, char *msg)
+{
+	struct timeval	now;
+	int				i;
+	int				j;
+	char			str[64];
+	long long		number;
+
+	sem_wait(philos->arguments->lock_status);
+	gettimeofday(&now, NULL);
+	number = ((now.tv_sec - philos->arguments->start_philo.tv_sec) * 1000
+		+ (now.tv_usec - philos->arguments->start_philo.tv_usec) * 0.001);
+	i = print_nbr(number, str);
+	j = 0;
+	str[i++] = '\t';
+	while (philos->numero_philo[j])
+		str[i++] = philos->numero_philo[j++];
+	str[i++] = '\t';
+	while (*msg)
+		str[i++] = *(msg++);
+	if (check_if_dead(philos) == 0 || (*(msg - 2) == 'd'))
+		write(1, str, i);
+	sem_post(philos->arguments->lock_status);
+}
+
 static inline void		fixed_usleep(unsigned int u_sec)
 {
 	struct timeval now;
@@ -31,9 +68,9 @@ static inline void		fixed_usleep(unsigned int u_sec)
 static inline void		*monitoring3(t_philosopher *philos)
 {
 	sem_wait(philos->arguments->dead);
-	status_philo(philos, "died\n");
 	g_philo_dead = 1;
 	sem_post(philos->arguments->dead);
+	status_philo(philos, "died\n");
 	return (NULL);
 }
 
