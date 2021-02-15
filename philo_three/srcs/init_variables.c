@@ -45,6 +45,7 @@ int		init_philos(t_philosopher **phil, t_init *a)
 	{
 		philos[i].arguments = a;
 		philos[i].num_philo = (i + 1);
+		philos[i].has_finish_eaten = 0;
 		philos[i].arguments->nb_has_eaten = 0;
 		ft_bzero(philos[i].numero_philo, 20);
 		print_nbr((i + 1), philos[i].numero_philo);

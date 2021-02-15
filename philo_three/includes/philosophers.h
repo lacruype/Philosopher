@@ -55,6 +55,7 @@ typedef	struct		s_philosopher
 	char			numero_philo[20];
 	sem_t			*fork;
 	int				num_philo;
+	int				has_finish_eaten;
 	struct timeval	*last_meal;
 	t_init			*arguments;
 }					t_philosopher;

@@ -12,6 +12,18 @@
 
 #include "../includes/philosophers.h"
 
+static inline int			check_if_everyone_eat(t_philosopher *philos)
+{
+	int i;
+
+	i = 0;
+	while (i < philos->arguments->number_of_philosopher && philos[i].has_finish_eaten == 2)
+		i++;
+	if (i == philos->arguments->number_of_philosopher)
+		return (1);
+	return (0);
+}
+
 static inline int			check_if_dead(t_philosopher *philo)
 {
 	sem_wait(philo->arguments->dead);
@@ -66,9 +78,8 @@ int					launch_philos(t_philosopher *philos)
 		if ((*philos[i].philo = fork()) == 0)
 		{
 			pthread_create(&philos[i].monitor, NULL, &monitoring, &(philos[i]));
-			exit(living(philos));
+			exit(living(&philos[i]));
 		}
-
 		i++;
 	}
 	i = 0;
@@ -76,15 +87,26 @@ int					launch_philos(t_philosopher *philos)
 	{
 		waitpid(*philos[i].philo, &status, WNOHANG | WUNTRACED);
 		if (WIFEXITED(status))
-			if (WEXITSTATUS(status))
+			if ((philos[i].has_finish_eaten = WEXITSTATUS(status)))
 			{
-				status_philo(&philos[i], "died\n");
-				while (j < philos->arguments->number_of_philosopher)
+				printf("PHILO[%d] EXIT STATUS = %d\n", i, philos[i].has_finish_eaten);
+				if (check_if_everyone_eat(philos) == 1)
 				{
-					kill(*philos[j].philo, SIGKILL);
-					j++;
+					sem_wait(philos->arguments->lock_status);
+					ft_putstr_fd("Everyone has eaten the amount of time expected\n", 1);
+					sem_post(philos->arguments->lock_status);
 				}
-				return (0);
+				else if (philos[i].has_finish_eaten == 1)
+				{
+					status_philo(&philos[i], "died\n");
+					while (j < philos->arguments->number_of_philosopher)
+					{
+						kill(*philos[j].philo, SIGKILL);
+						j++;
+					}
+				}
+				if (philos[i].has_finish_eaten == 1 || check_if_everyone_eat(philos) == 1)
+					return (0);
 			}
 		i++;
 		if (i >= philos->arguments->number_of_philosopher)
