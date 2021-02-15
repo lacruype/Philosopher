@@ -48,7 +48,7 @@ void					*monitoring(void *arg)
 {
 	long long		time_since_last_eat;
 	struct timeval	now;
-	t_philosopher *philos;
+	t_philosopher	*philos;
 
 	philos = arg;
 	while (1)

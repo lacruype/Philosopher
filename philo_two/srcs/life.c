@@ -88,7 +88,7 @@ static inline int			ft_eating_philo(t_philosopher *philos)
 	status_philo(philos, "is eating\n");
 	gettimeofday(philos->last_meal, NULL);
 	sem_wait(philos->arguments->lock_status);
-	philos->arguments->nb_has_eaten++;
+	++philos->arguments->nb_has_eaten;
 	sem_post(philos->arguments->lock_status);
 	fixed_usleep(philos->arguments->time_to_eat * 1000);
 	sem_post(philos->fork);

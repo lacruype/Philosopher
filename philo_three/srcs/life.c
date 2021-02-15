@@ -98,7 +98,7 @@ static inline int			ft_eating_philo(t_philosopher *philos)
 **	X1000 because Miliseconds -> Microseconds
 */
 
-int						living(void *arg)
+int							living(void *arg)
 {
 	t_philosopher *philo;
 

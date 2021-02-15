@@ -94,6 +94,12 @@ int					init_philos(t_philosopher **philos, t_init *args);
 void				init_args(t_init *args);
 
 /*
+**	LAUNCH_PHILOS.C
+*/
+
+int					launch_philos(t_philosopher *philos);
+
+/*
 **	LIFE.C
 */
 
@@ -103,9 +109,13 @@ int					living(void *arg);
 **	MAIN.C
 */
 
-void				*monitoring(void *arg);
-int					launch_philos(t_philosopher *philos);
 int					main(int ac, char **av);
+
+/*
+**	MONITORING.C
+*/
+
+void				*monitoring(void *arg);
 
 /*
 **	PARSING.C
