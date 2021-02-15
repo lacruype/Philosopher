@@ -78,6 +78,7 @@ int					launch_philos(t_philosopher *philos)
 		if ((*philos[i].philo = fork()) == 0)
 		{
 			pthread_create(&philos[i].monitor, NULL, &monitoring, &(philos[i]));
+			pthread_detach(philos[i].monitor);
 			exit(living(&philos[i]));
 		}
 		i++;
@@ -89,7 +90,7 @@ int					launch_philos(t_philosopher *philos)
 		if (WIFEXITED(status))
 			if ((philos[i].has_finish_eaten = WEXITSTATUS(status)))
 			{
-				printf("PHILO[%d] EXIT STATUS = %d\n", i, philos[i].has_finish_eaten);
+				//printf("PHILO[%d] EXIT STATUS = %d\n", i, philos[i].has_finish_eaten);
 				if (check_if_everyone_eat(philos) == 1)
 				{
 					sem_wait(philos->arguments->lock_status);
