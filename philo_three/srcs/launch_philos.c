@@ -73,7 +73,6 @@ static inline void			launch_philos2(t_philosopher *philos,
 			{
 				if (philos[i].has_finish_eaten == 1)
 				{
-					status_philo(&philos[i], "died\n");
 					while (++j < philos->arguments->number_of_philosopher)
 						kill(*philos[j].philo, SIGKILL);
 				}

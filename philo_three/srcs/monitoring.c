@@ -31,6 +31,7 @@ static inline void		fixed_usleep(unsigned int u_sec)
 static inline void		*monitoring3(t_philosopher *philos)
 {
 	sem_wait(philos->arguments->dead);
+	status_philo(philos, "died\n");
 	g_philo_dead = 1;
 	sem_post(philos->arguments->dead);
 	return (NULL);
