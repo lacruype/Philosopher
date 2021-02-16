@@ -71,6 +71,7 @@ static inline void		*monitoring3(t_philosopher *philos)
 	g_philo_dead = 1;
 	sem_post(philos->arguments->dead);
 	status_philo(philos, "died\n");
+	sem_wait(philos->arguments->lock_status);
 	return (NULL);
 }
 
