@@ -49,23 +49,7 @@ static inline void			status_philo(t_philosopher *philos, char *msg)
 	sem_post(philos->arguments->lock_status);
 }
 
-static inline void		fixed_usleep(unsigned int u_sec)
-{
-	struct timeval now;
-	struct timeval step;
-
-	gettimeofday(&now, NULL);
-	while (1)
-	{
-		usleep(50);
-		gettimeofday(&step, NULL);
-		if ((step.tv_sec - now.tv_sec)
-			* 1000000 + (step.tv_usec - now.tv_usec) >= u_sec)
-			return ;
-	}
-}
-
-static inline void		*monitoring3(t_philosopher *philos)
+static inline void			*monitoring3(t_philosopher *philos)
 {
 	sem_wait(philos->arguments->dead);
 	g_philo_dead = 1;
@@ -75,7 +59,7 @@ static inline void		*monitoring3(t_philosopher *philos)
 	return (NULL);
 }
 
-static inline void		*monitoring2(t_philosopher *philos)
+static inline void			*monitoring2(t_philosopher *philos)
 {
 	sem_wait(philos->arguments->lock_status);
 	g_philo_eaten = 1;
@@ -83,7 +67,7 @@ static inline void		*monitoring2(t_philosopher *philos)
 	return (NULL);
 }
 
-void					*monitoring(void *arg)
+void						*monitoring(void *arg)
 {
 	long long		time_since_last_eat;
 	struct timeval	now;
@@ -104,7 +88,6 @@ void					*monitoring(void *arg)
 			&& sem_post(philos->arguments->lock_status) == 0)
 			return (monitoring2(philos));
 		sem_post(philos->arguments->lock_status);
-		fixed_usleep(1000);
 	}
 	return (NULL);
 }
