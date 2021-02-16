@@ -52,8 +52,10 @@ static inline void			launch_philos2(t_philosopher *philos,
 			{
 				if (philos[i].has_finish_eaten == 1)
 				{
+					sem_wait(philos->arguments->lock_status);
 					while (++j < philos->arguments->number_of_philosopher)
 						kill(*philos[j].philo, SIGKILL);
+					sem_post(philos->arguments->lock_status);
 				}
 				if (philos[i].has_finish_eaten == 1
 					|| check_if_everyone_eat(philos) == 1)
