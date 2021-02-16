@@ -12,6 +12,22 @@
 
 #include "../includes/philosophers.h"
 
+static inline void			fixed_usleep(unsigned int u_sec)
+{
+	struct timeval now;
+	struct timeval step;
+
+	gettimeofday(&now, NULL);
+	while (1)
+	{
+		usleep(50);
+		gettimeofday(&step, NULL);
+		if ((step.tv_sec - now.tv_sec) * 1000000
+			+ (step.tv_usec - now.tv_usec) >= u_sec)
+			return ;
+	}
+}
+
 static inline int			check_if_everyone_eat(t_philosopher *philos)
 {
 	int i;
@@ -23,43 +39,6 @@ static inline int			check_if_everyone_eat(t_philosopher *philos)
 	if (i == philos->arguments->number_of_philosopher)
 		return (1);
 	return (0);
-}
-
-static inline int			check_if_dead(t_philosopher *philo)
-{
-	sem_wait(philo->arguments->dead);
-	if (g_philo_dead == 1)
-	{
-		sem_post(philo->arguments->dead);
-		return (1);
-	}
-	sem_post(philo->arguments->dead);
-	return (0);
-}
-
-static inline void			status_philo(t_philosopher *philos, char *msg)
-{
-	struct timeval	now;
-	int				i;
-	int				j;
-	char			str[64];
-	long long		number;
-
-	sem_wait(philos->arguments->lock_status);
-	gettimeofday(&now, NULL);
-	number = ((now.tv_sec - philos->arguments->start_philo.tv_sec) * 1000
-		+ (now.tv_usec - philos->arguments->start_philo.tv_usec) * 0.001);
-	i = print_nbr(number, str);
-	j = 0;
-	str[i++] = '\t';
-	while (philos->numero_philo[j])
-		str[i++] = philos->numero_philo[j++];
-	str[i++] = '\t';
-	while (*msg)
-		str[i++] = *(msg++);
-	if (check_if_dead(philos) == 0)
-		write(1, str, i);
-	sem_post(philos->arguments->lock_status);
 }
 
 static inline void			launch_philos2(t_philosopher *philos,
@@ -82,6 +61,7 @@ static inline void			launch_philos2(t_philosopher *philos,
 			}
 		if (++i >= philos->arguments->number_of_philosopher)
 			i = 0;
+		fixed_usleep(1000);
 	}
 }
 
